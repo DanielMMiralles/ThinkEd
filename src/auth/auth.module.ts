@@ -6,17 +6,19 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../user/user.entity';
+import { JwtStrategy } from './jwt.strategy'; // Importa la nueva estrategia
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
     PassportModule,
     JwtModule.register({
-      secret: 'Adridan417*', 
-      signOptions: { expiresIn: '1h' }, // El token expira en 1 hora
+      secret: 'Adridan417*',
+      signOptions: { expiresIn: '1h' },
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy], 
+  exports: [AuthService, JwtModule, PassportModule], 
 })
 export class AuthModule {}

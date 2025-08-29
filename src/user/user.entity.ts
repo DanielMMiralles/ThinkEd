@@ -1,6 +1,7 @@
 
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
-import { v4 as uuidv4 } from 'uuid';
+import { OneToMany } from 'typeorm';
+import { Course } from 'src/course/course.entity';
 
 @Entity()
 export class User {
@@ -18,4 +19,7 @@ export class User {
 
   @Column({ default: 'estudiante' })
   role: string;
+
+  @OneToMany(() => Course, (course) => course.instructor)
+  courses: Course[];
 }
