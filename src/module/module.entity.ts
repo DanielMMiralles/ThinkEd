@@ -1,5 +1,5 @@
 // src/module/module.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { Course } from '../course/course.entity';
 import { Lesson } from '../lesson/lesson.entity';
 
@@ -11,7 +11,7 @@ export class Module {
   @Column()
   title: string;
 
-  @Column()
+  @Column({ default: 0 })
   order: number;
 
   @ManyToOne(() => Course, course => course.modules)
@@ -19,4 +19,10 @@ export class Module {
 
   @OneToMany(() => Lesson, lesson => lesson.module)
   lessons: Lesson[];
+
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updatedAt: Date;
 }

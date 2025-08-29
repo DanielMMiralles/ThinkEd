@@ -1,6 +1,13 @@
 // src/lesson/lesson.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { Module } from '../module/module.entity';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { Module } from '../module/module.entity'; 
 
 @Entity('lessons')
 export class Lesson {
@@ -10,15 +17,21 @@ export class Lesson {
   @Column()
   title: string;
 
-  @Column('text')
-  content: string;
+  @Column({ nullable: true })
+  description: string;
 
   @Column()
-  type: string; // video, text, quiz
+  videoUrl: string;
 
-  @Column()
+  @Column({ default: 0 })
   order: number;
 
-  @ManyToOne(() => Module, module => module.lessons)
+  @ManyToOne(() => Module, (module) => module.lessons)
   module: Module;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updatedAt: Date;
 }
