@@ -1,7 +1,8 @@
 // src/course/course.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { User } from '../user/user.entity';
 import { Module } from '../module/module.entity';
+import { Enrollment } from '../enrollment/enrollment.entity';
 
 @Entity('courses')
 export class Course {
@@ -29,11 +30,20 @@ export class Course {
   category: string;
 
   @Column({ default: 'Draft' })
-  status: string; // Draft, Published, Archived
+  status: string;
 
   @ManyToOne(() => User, user => user.courses)
   instructor: User;
 
   @OneToMany(() => Module, module => module.course)
   modules: Module[];
+
+  @OneToMany(() => Enrollment, (enrollment) => enrollment.course)
+  enrollments: Enrollment[];
+
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updatedAt: Date;
 }
