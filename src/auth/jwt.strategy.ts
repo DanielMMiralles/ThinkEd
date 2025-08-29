@@ -18,6 +18,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: any) {
     // En un proyecto real, buscarías al usuario en la base de datos para asegurarte de que existe.
     // Por ahora, solo devolvemos el payload del token.
-    return { userId: payload.sub, email: payload.email };
+    return { userId: payload.sub, email: payload.email, role: payload.role };
   }
 }

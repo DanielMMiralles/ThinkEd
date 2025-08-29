@@ -14,7 +14,15 @@ export class Course {
   @Column('text')
   description: string;
 
-  @Column()
+  @Column({
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    transformer: {
+      from: (value: string) => parseFloat(value),
+      to: (value: number) => value,
+    },
+  })
   price: number;
 
   @Column()

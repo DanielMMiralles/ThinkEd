@@ -7,6 +7,8 @@ import { AuthController } from './auth.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../user/user.entity';
 import { JwtStrategy } from './jwt.strategy'; // Importa la nueva estrategia
+import { RolesGuard } from './roles.guard';
+
 
 @Module({
   imports: [
@@ -18,7 +20,7 @@ import { JwtStrategy } from './jwt.strategy'; // Importa la nueva estrategia
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy], 
+  providers: [AuthService, JwtStrategy, RolesGuard], 
   exports: [AuthService, JwtModule, PassportModule], 
 })
 export class AuthModule {}
