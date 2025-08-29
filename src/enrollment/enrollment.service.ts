@@ -6,6 +6,7 @@ import { Enrollment } from './enrollment.entity';
 import { EnrollmentDto } from './dto/enrollment.dto';
 import { User } from '../user/user.entity';
 import { Course } from '../course/course.entity';
+import { CourseResponseDto } from '../course/dto/course-response.dto';
 
 @Injectable()
 export class EnrollmentService {
@@ -44,5 +45,32 @@ export class EnrollmentService {
     const newEnrollment = this.enrollmentRepository.create({ user, course });
 
     return this.enrollmentRepository.save(newEnrollment);
+  }
+  
+  async findEnrolledCourses(userId: string): Promise<CourseResponseDto[]> {
+    const enrollments = await this.enrollmentRepository
+      .createQueryBuilder('enrollment')
+      .leftJoinAndSelect('enrollment.course', 'course')
+      .leftJoinAndSelect('course.instructor', 'instructor')
+      .where('enrollment.user.id = :userId', { userId })
+      .select([
+        'course.id',
+        'course.title',
+        'course.description',
+        'course.price',
+        'course.category',
+        'course.status',
+        'course.createdAt',
+        'course.updatedAt',
+        'instructor.id',
+        'instructor.full_name',
+      ])
+      .getMany();
+
+    // Mapeamos los resultados para devolver solo los detalles del curso
+    return enrollments.map(enrollment => ({
+      ...enrollment.course,
+      instructorName: enrollment.course.instructor.full_name,
+    }));
   }
 }
