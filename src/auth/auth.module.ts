@@ -8,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../user/user.entity';
 import { JwtStrategy } from './jwt.strategy'; // Importa la nueva estrategia
 import { RolesGuard } from './roles.guard';
+import { MailModule } from 'src/mail/mail.module';
 
 
 @Module({
@@ -18,6 +19,7 @@ import { RolesGuard } from './roles.guard';
       secret: 'Adridan417*',
       signOptions: { expiresIn: '1h' },
     }),
+    MailModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, RolesGuard], 

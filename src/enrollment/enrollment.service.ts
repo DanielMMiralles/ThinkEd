@@ -47,27 +47,40 @@ export class EnrollmentService {
     return this.enrollmentRepository.save(newEnrollment);
   }
   
-  async findEnrolledCourses(userId: string): Promise<CourseResponseDto[]> {
-    const enrollments = await this.enrollmentRepository
+  async findEnrolledCourses(
+    userId: string,
+    limit: number,
+    offset: number,
+    category?: string,
+    title?: string,
+  ): Promise<CourseResponseDto[]> {
+    // Iniciar el Query Builder
+    let query = this.enrollmentRepository
       .createQueryBuilder('enrollment')
       .leftJoinAndSelect('enrollment.course', 'course')
       .leftJoinAndSelect('course.instructor', 'instructor')
-      .where('enrollment.user.id = :userId', { userId })
-      .select([
-        'course.id',
-        'course.title',
-        'course.description',
-        'course.price',
-        'course.category',
-        'course.status',
-        'course.createdAt',
-        'course.updatedAt',
-        'instructor.id',
-        'instructor.full_name',
-      ])
+      .where('enrollment.user.id = :userId', { userId });
+
+    // Aplicar el filtrado
+    if (category) {
+      query = query.andWhere('course.category = :category', { category });
+    }
+
+    if (title) {
+      query = query.andWhere('course.title LIKE :title', { title: `%${title}%` });
+    }
+
+    // Aplicar paginación y orden
+    const enrollments = await query
+      .skip(offset) 
+      .take(limit) 
       .getMany();
 
-    // Mapeamos los resultados para devolver solo los detalles del curso
+    if (!enrollments || enrollments.length === 0) {
+      throw new NotFoundException('No estás inscrito en cursos que coincidan con los criterios.');
+    }
+
+    //Mapear y devolver los resultados
     return enrollments.map(enrollment => ({
       ...enrollment.course,
       instructorName: enrollment.course.instructor.full_name,

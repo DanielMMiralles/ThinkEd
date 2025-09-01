@@ -1,5 +1,5 @@
 // src/enrollment/enrollment.controller.ts
-import { Controller, Post, Body, Request, UseGuards, Get } from '@nestjs/common';
+import { Controller, Post, Body, Request, UseGuards, Get, Query } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { EnrollmentService } from './enrollment.service';
 import { EnrollmentDto } from './dto/enrollment.dto';
@@ -17,8 +17,20 @@ export class EnrollmentController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Get('my-courses') 
-  async getMyCourses(@Request() req: RequestWithUser): Promise<CourseResponseDto[]> {
-    return this.enrollmentService.findEnrolledCourses(req.user.userId);
+  @Get('my-courses')
+  async getMyCourses(
+    @Request() req: RequestWithUser,
+    @Query('limit') limit = 10,
+    @Query('offset') offset = 0,
+    @Query('category') category?: string,
+    @Query('title') title?: string,
+  ): Promise<CourseResponseDto[]> {
+    return this.enrollmentService.findEnrolledCourses(
+      req.user.userId,
+      parseInt(limit as any, 10),
+      parseInt(offset as any, 10),
+      category,
+      title,
+    );
   }
 }

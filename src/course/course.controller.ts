@@ -1,5 +1,5 @@
 // src/course/course.controller.ts
-import { Controller, Post, Body, UseGuards, Request, Get, Param, Put, Delete } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Request, Get, Param, Put, Delete, Query} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
@@ -21,8 +21,18 @@ export class CourseController {
   }
 
   @Get()
-  async findAll(): Promise<CourseResponseDto[]> {
-    return this.courseService.findAll();
+  async findAll(
+    @Query('limit') limit = 10,
+    @Query('offset') offset = 0,
+    @Query('category') category?: string,
+    @Query('title') title?: string,
+  ): Promise<CourseResponseDto[]> {
+    return this.courseService.findAll(
+      parseInt(limit as any),
+      parseInt(offset as any),
+      category,
+      title,
+    );
   }
 
   @Get(':id') 

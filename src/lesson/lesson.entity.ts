@@ -4,10 +4,12 @@ import {
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
+  OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Module } from '../module/module.entity'; 
+import { Quiz } from '../quiz/quiz.entity';
 
 @Entity('lessons')
 export class Lesson {
@@ -28,6 +30,9 @@ export class Lesson {
 
   @ManyToOne(() => Module, (module) => module.lessons)
   module: Module;
+
+  @OneToMany(() => Quiz, (quiz) => quiz.lesson)
+  quizzes: Quiz[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

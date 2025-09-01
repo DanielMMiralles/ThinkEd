@@ -3,6 +3,7 @@ import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateCol
 import { OneToMany } from 'typeorm';
 import { Course } from 'src/course/course.entity';
 import { Enrollment } from 'src/enrollment/enrollment.entity';
+import { Submission } from 'src/submission/submission.entity';
 
 @Entity()
 export class User {
@@ -32,4 +33,15 @@ export class User {
 
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
+
+  @OneToMany(() => Submission, (submission) => submission.student)
+  submissions: Submission[];
+
+  // Columnas para esperar un token de restablecimiento de contraseña
+  @Column({ type: 'text', nullable: true })
+  reset_token: string | null;
+
+  @Column({ type: 'timestamp', nullable: true })
+  reset_token_expires_at: Date | null;
+
 }

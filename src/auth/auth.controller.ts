@@ -19,4 +19,16 @@ export class AuthController {
   async login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
+
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  async forgotPassword(@Body('email') email: string): Promise<void> {
+    await this.authService.requestPasswordReset(email);
+  }
+
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  async resetPassword(@Body('token') token: string, @Body('password') password: string): Promise<void> {
+    await this.authService.resetPassword(token, password);
+  }
 }
