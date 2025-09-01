@@ -9,53 +9,81 @@ import { Lesson } from '../lesson/lesson.entity';
 
 @Injectable()
 export class QuizService {
-  constructor(
-    @InjectRepository(Quiz)
-    private quizRepository: Repository<Quiz>,
-    @InjectRepository(Question)
-    private questionRepository: Repository<Question>,
-    @InjectRepository(Lesson)
-    private lessonRepository: Repository<Lesson>,
-    private dataSource: DataSource,
-  ) {}
+  constructor(
+    @InjectRepository(Quiz)
+    private quizRepository: Repository<Quiz>,
+    @InjectRepository(Question)
+    private questionRepository: Repository<Question>,
+    @InjectRepository(Lesson)
+    private lessonRepository: Repository<Lesson>,
+    private dataSource: DataSource,
+  ) {}
 
-  async createQuiz(createQuizDto: CreateQuizDto): Promise<Quiz> {
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+  // ... (existing createQuiz and findOne methods)
 
-    try {
-      const { lessonId, questions, ...quizData } = createQuizDto;
-      const lesson = await this.lessonRepository.findOne({ where: { id: lessonId } });
+  async createQuiz(createQuizDto: CreateQuizDto): Promise<Quiz> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-      if (!lesson) {
-        throw new NotFoundException(`Lección con ID "${lessonId}" no encontrada.`);
-      }
+    try {
+      const { lessonId, questions, ...quizData } = createQuizDto;
+      const lesson = await this.lessonRepository.findOne({ where: { id: lessonId } });
 
-      const newQuiz = this.quizRepository.create({
-        ...quizData,
-        lesson: lesson,
-      });
+      if (!lesson) {
+        throw new NotFoundException(`Lección con ID "${lessonId}" no encontrada.`);
+      }
 
-      await queryRunner.manager.save(newQuiz);
+      const newQuiz = this.quizRepository.create({
+        ...quizData,
+        lesson: lesson,
+      });
 
-      for (const questionDto of questions) {
-        const newQuestion = this.questionRepository.create({
-          quiz: newQuiz,
-          question_text: questionDto.question_text,
-          options: questionDto.options,
-          correct_answer: questionDto.correct_answer,
-        });
-        await queryRunner.manager.save(newQuestion);
-      }
+      await queryRunner.manager.save(newQuiz);
 
-      await queryRunner.commitTransaction();
-      return newQuiz;
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
-    } finally {
-      await queryRunner.release();
-    }
-  }
+      for (const questionDto of questions) {
+        const newQuestion = this.questionRepository.create({
+          quiz: newQuiz,
+          question_text: questionDto.question_text,
+          options: questionDto.options,
+          correct_answer: questionDto.correct_answer,
+        });
+        await queryRunner.manager.save(newQuestion);
+      }
+
+      await queryRunner.commitTransaction();
+      return newQuiz;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async findOne(id: string): Promise<Quiz> {
+    const quiz = await this.quizRepository.findOne({
+      where: { id },
+      relations: ['questions'],
+    });
+
+    if (!quiz) {
+      throw new NotFoundException(`Cuestionario con ID "${id}" no encontrado.`);
+    }
+
+    return quiz;
+  }
+
+  async findQuizzesByLessonId(lessonId: string): Promise<Quiz[]> {
+    const quizzes = await this.quizRepository.find({
+      where: { lesson: { id: lessonId } },
+      relations: ['questions'],
+    });
+
+    if (!quizzes || quizzes.length === 0) {
+      throw new NotFoundException(`No se encontraron cuestionarios para la lección con ID "${lessonId}".`);
+    }
+
+    return quizzes;
+  }
 }

@@ -5,12 +5,14 @@ import { EnrollmentService } from './enrollment.service';
 import { EnrollmentDto } from './dto/enrollment.dto';
 import { CourseResponseDto } from '../course/dto/course-response.dto';
 import type { RequestWithUser } from '../common/interfaces/request-with-user.interface';
+import { Roles } from 'src/auth/roles.decorator';
 
 @Controller('enrollment')
 export class EnrollmentController {
   constructor(private readonly enrollmentService: EnrollmentService) {}
 
   @UseGuards(AuthGuard('jwt')) // Protege la ruta con el guard de JWT
+  @Roles("estudiante") // Solo los estudiantes pueden inscribirse en cursos
   @Post()
   async enrollCourse(@Body() enrollmentDto: EnrollmentDto, @Request() req: RequestWithUser) {
     return this.enrollmentService.createEnrollment(enrollmentDto, req.user.userId);
