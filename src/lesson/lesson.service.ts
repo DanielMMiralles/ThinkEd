@@ -19,6 +19,23 @@ export class LessonService {
     private enrollmentRepository: Repository<Enrollment>,
   ) {}
 
+  private async validateInstructorPermission(lessonId: string, userId: string): Promise<Lesson> {
+    const lesson = await this.lessonRepository.findOne({
+      where: { id: lessonId },
+      relations: ['module', 'module.course', 'module.course.instructor'],
+    });
+
+    if (!lesson) {
+      throw new NotFoundException(`Lección con ID "${lessonId}" no encontrada.`);
+    }
+
+    if (!lesson.module?.course?.instructor?.id || lesson.module.course.instructor.id !== userId) {
+      throw new UnauthorizedException('No tienes permiso para modificar esta lección.');
+    }
+
+    return lesson;
+  }
+
   async create(moduleId: string, createLessonDto: CreateLessonDto, userId: string): Promise<Lesson> {
     const module = await this.moduleRepository.findOne({
       where: { id: moduleId },
@@ -29,7 +46,7 @@ export class LessonService {
       throw new NotFoundException(`Módulo con ID "${moduleId}" no encontrado.`);
     }
 
-    if (module.course.instructor.id !== userId) {
+    if (!module.course?.instructor?.id || module.course.instructor.id !== userId) {
       throw new UnauthorizedException('No tienes permiso para agregar lecciones a este módulo.');
     }
 
@@ -41,35 +58,42 @@ export class LessonService {
   }
 
   async findAll(moduleId: string): Promise<Lesson[]> {
-    const module = await this.moduleRepository.findOne({
-      where: { id: moduleId },
-    });
-    if (!module) {
-      throw new NotFoundException(`Módulo con ID "${moduleId}" no encontrado.`);
-    }
-
     return this.lessonRepository.find({
       where: { module: { id: moduleId } },
       order: { order: 'ASC' },
     });
   }
 
-    async findOne(lessonId: string, userId: string): Promise<Lesson> {
+  async findOne(lessonId: string, userId: string): Promise<Lesson> {
     const lesson = await this.lessonRepository.findOne({
       where: { id: lessonId },
       relations: ['module', 'module.course'],
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        videoUrl: true,
+        order: true,
+        module: {
+          id: true,
+          course: {
+            id: true,
+            title: true
+          }
+        }
+      }
     });
 
     if (!lesson) {
       throw new NotFoundException(`Lección con ID "${lessonId}" no encontrada.`);
     }
 
-
     const enrollment = await this.enrollmentRepository.findOne({
       where: {
         user: { id: userId },
         course: { id: lesson.module.course.id },
       },
+      select: ['id']
     });
 
     if (!enrollment) {
@@ -80,37 +104,13 @@ export class LessonService {
   }
 
   async update(lessonId: string, updateLessonDto: UpdateLessonDto, userId: string): Promise<Lesson> {
-    const lesson = await this.lessonRepository.findOne({
-      where: { id: lessonId },
-      relations: ['module', 'module.course', 'module.course.instructor'],
-    });
-
-    if (!lesson) {
-      throw new NotFoundException(`Lección con ID "${lessonId}" no encontrada.`);
-    }
-
-    if (lesson.module.course.instructor.id !== userId) {
-      throw new UnauthorizedException('No tienes permiso para actualizar esta lección.');
-    }
-
+    const lesson = await this.validateInstructorPermission(lessonId, userId);
     const updatedLesson = Object.assign(lesson, updateLessonDto);
     return this.lessonRepository.save(updatedLesson);
   }
 
   async remove(lessonId: string, userId: string): Promise<void> {
-    const lesson = await this.lessonRepository.findOne({
-      where: { id: lessonId },
-      relations: ['module', 'module.course', 'module.course.instructor'],
-    });
-
-    if (!lesson) {
-      throw new NotFoundException(`Lección con ID "${lessonId}" no encontrada.`);
-    }
-
-    if (lesson.module.course.instructor.id !== userId) {
-      throw new UnauthorizedException('No tienes permiso para eliminar esta lección.');
-    }
-
+    const lesson = await this.validateInstructorPermission(lessonId, userId);
     await this.lessonRepository.remove(lesson);
   }
 }

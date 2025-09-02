@@ -1,5 +1,5 @@
 // src/auth/auth.controller.ts
-import { Controller, Post, Body, HttpCode, HttpStatus, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -17,7 +17,15 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(@Body() loginDto: LoginDto) {
-    return this.authService.login(loginDto);
+    // We now call the updated login method in AuthService, which handles both tokens.
+    const user = await this.authService.validateUser(
+      loginDto.email,
+      loginDto.password,
+    );
+    if (!user) {
+      throw new UnauthorizedException('Credenciales inválidas.');
+    }
+    return this.authService.login(user);
   }
 
   @Post('forgot-password')
@@ -30,5 +38,22 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async resetPassword(@Body('token') token: string, @Body('password') password: string): Promise<void> {
     await this.authService.resetPassword(token, password);
+  }
+
+    //Endpoint para solicitar el token de refresco
+  @Post('request-refresh-token')
+  @HttpCode(HttpStatus.OK)
+  async requestRefreshToken(@Body('userId') userId: string) {
+    return this.authService.createRefreshToken(userId);
+  }
+
+  // Endpoint para usar el token de refresco y obtener uno nuevo de acceso
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  async refreshToken(@Body('userId') userId: string, @Body('refreshToken') refreshToken: string) {
+    if (!userId || !refreshToken) {
+      throw new BadRequestException('Se requieren userId y refreshToken.');
+    }
+    return this.authService.refreshToken(userId, refreshToken);
   }
 }

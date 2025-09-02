@@ -11,6 +11,9 @@ export class Module {
   @Column()
   title: string;
 
+  @Column({ nullable: true })
+  description: string;
+
   @Column({ default: 0 })
   order: number;
 

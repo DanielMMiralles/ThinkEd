@@ -22,8 +22,14 @@ export class EnrollmentService {
   async createEnrollment(enrollmentDto: EnrollmentDto, userId: string) {
     const { courseId } = enrollmentDto;
 
-    const user = await this.userRepository.findOne({ where: { id: userId } });
-    const course = await this.courseRepository.findOne({ where: { id: courseId } });
+    const user = await this.userRepository.findOne({ 
+      where: { id: userId },
+      select: ['id', 'full_name', 'email', 'role']
+    });
+    const course = await this.courseRepository.findOne({ 
+      where: { id: courseId },
+      select: ['id', 'title', 'description', 'instructor']
+    });
 
     if (!user) {
       throw new NotFoundException('Usuario no encontrado.');
@@ -35,6 +41,7 @@ export class EnrollmentService {
     // Verificar si el usuario ya está inscrito en el curso
     const existingEnrollment = await this.enrollmentRepository.findOne({
       where: { user: { id: userId }, course: { id: courseId } },
+      relations: ['user', 'course'],
     });
 
     if (existingEnrollment) {

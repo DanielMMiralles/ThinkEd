@@ -1,5 +1,5 @@
 // src/course/dto/update-course.dto.ts
-import { IsString, IsNumber, IsOptional } from 'class-validator';
+import { IsString, IsNumber, IsOptional, IsDate } from 'class-validator';
 
 export class UpdateCourseDto {
   @IsOptional()
@@ -17,4 +17,8 @@ export class UpdateCourseDto {
   @IsOptional()
   @IsString()
   category?: string;
+
+  @IsOptional()
+  @IsDate()
+  updatedAt?: Date;
 }

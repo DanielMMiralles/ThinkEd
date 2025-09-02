@@ -9,6 +9,7 @@ import {
   Param,
   HttpCode,
   HttpStatus,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
@@ -33,16 +34,16 @@ export class QuizController {
 
   // 2. Endpoint para que los estudiantes y los instructores vean un cuestionario
   @Get(':id')
-  @Roles('estudiante', 'instructor')
-  async getQuizById(@Param('id') id: string): Promise<Quiz> {
+  @Roles('student', 'instructor')
+  async getQuizById(@Param('id', ParseUUIDPipe) id: string): Promise<Quiz> {
     return this.quizService.findOne(id);
   }
 
   // 3. Endpoint para que el estudiante acceda a un cuestionario por lección
   @Get('lesson/:lessonId')
-  @Roles('estudiante', 'instructor')
+  @Roles('student', 'instructor')
   async getQuizzesByLessonId(
-    @Param('lessonId') lessonId: string,
+    @Param('lessonId', ParseUUIDPipe) lessonId: string,
   ): Promise<Quiz[]> {
     return this.quizService.findQuizzesByLessonId(lessonId);
   }

@@ -48,7 +48,7 @@ export class LessonController {
   @UseGuards(RolesGuard)
   @Roles('instructor')
   @Delete(':lessonId')
-  @HttpCode(HttpStatus.NO_CONTENT) // ✅ Buena práctica para indicar que la eliminación fue exitosa
+  @HttpCode(HttpStatus.NO_CONTENT) 
   async removeLesson(@Param('lessonId') lessonId: string, @Request() req: RequestWithUser): Promise<void> {
     await this.lessonService.remove(lessonId, req.user.userId);
   }  

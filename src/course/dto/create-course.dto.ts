@@ -1,5 +1,5 @@
 // src/course/dto/create-course.dto.ts
-import { IsNotEmpty, IsString, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber, IsDate } from 'class-validator';
 
 export class CreateCourseDto {
   @IsString()
@@ -16,4 +16,10 @@ export class CreateCourseDto {
   @IsString()
   @IsNotEmpty()
   category: string;
+
+  @IsDate()
+  createdAt: Date;
+
+  @IsDate()
+  updatedAt: Date;
 }

@@ -1,5 +1,5 @@
 // src/user/dto/update-user.dto.ts
-import { IsString, IsOptional, IsEmail, MinLength } from 'class-validator';
+import { IsOptional, IsString, IsEmail } from 'class-validator';
 
 export class UpdateUserDto {
   @IsOptional()
@@ -9,9 +9,4 @@ export class UpdateUserDto {
   @IsOptional()
   @IsEmail()
   email?: string;
-
-  @IsOptional()
-  @IsString()
-  @MinLength(8)
-  password?: string;
 }

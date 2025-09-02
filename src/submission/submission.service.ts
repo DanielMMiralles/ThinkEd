@@ -34,7 +34,10 @@ export class SubmissionService {
       throw new NotFoundException(`Cuestionario con ID "${quizId}" no encontrado.`);
     }
 
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const user = await this.userRepository.findOne({ 
+      where: { id: userId },
+      select: ['id', 'full_name', 'email', 'role']
+    });
     if (!user) {
       throw new NotFoundException(`Usuario con ID "${userId}" no encontrado.`);
     }
@@ -42,6 +45,10 @@ export class SubmissionService {
     // 2. Calificar las respuestas del estudiante
     let correctAnswersCount = 0;
     const totalQuestions = quiz.questions.length;
+
+    if (totalQuestions === 0) {
+      throw new NotFoundException('El cuestionario no tiene preguntas.');
+    }
 
     for (const studentAnswer of studentAnswers) {
       const question = quiz.questions.find(q => q.id === studentAnswer.questionId);
@@ -53,7 +60,7 @@ export class SubmissionService {
     }
 
     // 3. Calcular el puntaje (ejemplo: de 0 a 100)
-    const score = (correctAnswersCount / totalQuestions) * 100;
+    const score = totalQuestions > 0 ? (correctAnswersCount / totalQuestions) * 100 : 0;
 
     // 4. Guardar la entrega del estudiante
     const submission = this.submissionRepository.create({

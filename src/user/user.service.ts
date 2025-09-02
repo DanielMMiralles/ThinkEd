@@ -29,7 +29,10 @@ export class UserService {
   }
 
   async update(userId: string, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const user = await this.userRepository.findOne({ 
+      where: { id: userId },
+      select: ['id', 'full_name', 'email', 'role', 'createdAt', 'updatedAt']
+    });
 
     if (!user) {
       throw new NotFoundException('Usuario no encontrado.');
@@ -37,7 +40,10 @@ export class UserService {
 
     // Verificar si el correo ya existe en otro usuario
     if (updateUserDto.email && updateUserDto.email !== user.email) {
-      const existingUser = await this.userRepository.findOne({ where: { email: updateUserDto.email } });
+      const existingUser = await this.userRepository.findOne({ 
+        where: { email: updateUserDto.email },
+        select: ['id', 'email']
+      });
       if (existingUser) {
         throw new BadRequestException('El correo electrónico ya está en uso.');
       }
@@ -70,6 +76,17 @@ export class UserService {
       const courses = await this.courseRepository.find({
         where: { instructor: { id: user.id } },
         relations: ['instructor'],
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          category: true,
+          status: true,
+          instructor: {
+            id: true,
+            full_name: true
+          }
+        }
       });
       publicProfile.courses = courses;
     }

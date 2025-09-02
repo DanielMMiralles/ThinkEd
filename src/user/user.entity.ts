@@ -44,4 +44,6 @@ export class User {
   @Column({ type: 'timestamp', nullable: true })
   reset_token_expires_at: Date | null;
 
+  @Column({ nullable: true })
+  hashed_refresh_token: string;
 }

@@ -1,36 +1,51 @@
 // src/mail/mail.service.ts
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class MailService {
   private transporter;
 
-  constructor() {
+  constructor(private readonly configService: ConfigService) {
     this.transporter = nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
-      port: 587,
+      host: this.configService.get<string>('ETHEREAL_HOST'),
+      port: this.configService.get<number>('ETHEREAL_PORT'),
       secure: false,
+      requireTLS: true, // Forzar TLS para conexión segura
+      tls: {
+        rejectUnauthorized: false // Solo para desarrollo, usar true en producción
+      },
       auth: {
-        user: 'doyle.klocko@ethereal.email',
-        pass: 'zztsB5vr4XDYwadj8f'
+        user: this.configService.get<string>('ETHEREAL_USER'),
+        pass: this.configService.get<string>('ETHEREAL_PASS'),
       },
     });
   }
 
-  async sendPasswordResetEmail(email: string, token: string) {
-    const resetUrl = `http://localhost:3000/auth/reset-password?token=${token}`; // You'll replace this with your frontend URL later
+  private sanitizeToken(token: string): string {
+    // Sanitizar token para prevenir XSS
+    return token.replace(/[<>"'&]/g, '');
+  }
 
-    await this.transporter.sendMail({
-      from: '"ThinkEd" <damm172004@gmail.com>',
-      to: email,
-      subject: 'Restablecer Contraseña',
-      html: `
-        <p>Hola,</p>
-        <p>Has solicitado restablecer tu contraseña. Haz clic en el siguiente enlace para continuar:</p>
-        <a href="${resetUrl}">${resetUrl}</a>
-        <p>Este enlace expirará en media hora.</p>
-      `,
-    });
+  async sendPasswordResetEmail(email: string, token: string) {
+    try {
+      const sanitizedToken = this.sanitizeToken(token);
+      const resetUrl = `http://localhost:3000/auth/reset-password?token=${encodeURIComponent(sanitizedToken)}`;
+
+      await this.transporter.sendMail({
+        from: '"ThinkEd" <damm172004@gmail.com>',
+        to: email,
+        subject: 'Restablecer Contraseña',
+        html: `
+          <p>Hola,</p>
+          <p>Has solicitado restablecer tu contraseña. Haz clic en el siguiente enlace para continuar:</p>
+          <a href="${resetUrl}">Restablecer Contraseña</a>
+          <p>Este enlace expirará en media hora.</p>
+        `,
+      });
+    } catch (error) {
+      throw new Error('Error al enviar el correo de restablecimiento');
+    }
   }
 }

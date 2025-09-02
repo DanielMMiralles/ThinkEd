@@ -24,6 +24,14 @@ export class ModuleService {
     const course = await this.courseRepository.findOne({
       where: { id: courseId },
       relations: ['instructor'],
+      select: {
+        id: true,
+        title: true,
+        instructor: {
+          id: true,
+          full_name: true
+        }
+      }
     });
 
     if (!course) {
@@ -31,7 +39,7 @@ export class ModuleService {
     }
 
     //Verificar si el usuario que crea el módulo es el instructor del curso
-    if (course.instructor.id !== userId) {
+    if (!course.instructor?.id || course.instructor.id !== userId) {
       throw new UnauthorizedException('No tienes permiso para agregar módulos a este curso.');
     }
 
@@ -44,45 +52,63 @@ export class ModuleService {
     return this.moduleRepository.save(newModule);
   }
 
-    async findAll(courseId: string): Promise<Module[]> {
-    const course = await this.courseRepository.findOne({ where: { id: courseId } });
-    if (!course) {
-      throw new NotFoundException(`Curso con ID "${courseId}" no encontrado.`);
-    }
-
+  async findAll(courseId: string): Promise<Module[]> {
     return this.moduleRepository.find({
       where: { course: { id: courseId } },
-      order: { order: 'ASC' }, // Los ordena por el campo "order"
+      order: { order: 'ASC' },
+      select: ['id', 'title', 'description', 'order']
     });
   }
 
-    async update(moduleId: string, updateModuleDto: UpdateModuleDto, userId: string): Promise<Module> {
+  async update(moduleId: string, updateModuleDto: UpdateModuleDto, userId: string): Promise<Module> {
     const module = await this.moduleRepository.findOne({
       where: { id: moduleId },
       relations: ['course', 'course.instructor'],
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        order: true,
+        course: {
+          id: true,
+          instructor: {
+            id: true
+          }
+        }
+      }
     });
 
     if (!module) {
       throw new NotFoundException(`Módulo con ID "${moduleId}" no encontrado.`);
     }
-    if (module.course.instructor.id !== userId) {
+    if (!module.course?.instructor?.id || module.course.instructor.id !== userId) {
       throw new UnauthorizedException('No tienes permiso para actualizar este módulo.');
     }
+
 
     const updatedModule = Object.assign(module, updateModuleDto);
     return this.moduleRepository.save(updatedModule);
   }
 
-    async remove(moduleId: string, userId: string): Promise<void> {
+  async remove(moduleId: string, userId: string): Promise<void> {
     const module = await this.moduleRepository.findOne({
       where: { id: moduleId },
       relations: ['course', 'course.instructor'],
+      select: {
+        id: true,
+        course: {
+          id: true,
+          instructor: {
+            id: true
+          }
+        }
+      }
     });
 
     if (!module) {
       throw new NotFoundException(`Módulo con ID "${moduleId}" no encontrado.`);
     }
-    if (module.course.instructor.id !== userId) {
+    if (!module.course?.instructor?.id || module.course.instructor.id !== userId) {
       throw new UnauthorizedException('No tienes permiso para eliminar este módulo.');
     }
 

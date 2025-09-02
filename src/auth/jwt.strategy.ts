@@ -2,21 +2,40 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { ConfigService } from '@nestjs/config';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from '../user/user.entity';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private authService: AuthService) {
+  constructor(
+    private configService: ConfigService,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: 'Adridan417*', // Usa la misma clave secreta que en jwt.module.ts
+      secretOrKey: configService.get<string>('JWT_SECRET') || 'Adridan417*',
     });
   }
 
   async validate(payload: any) {
-    // En un proyecto real, buscarías al usuario en la base de datos para asegurarte de que existe.
-    // Por ahora, solo devolvemos el payload del token.
-    return { userId: payload.sub, email: payload.email, role: payload.role };
+    if (!payload || !payload.sub || !payload.email) {
+      throw new UnauthorizedException('Token inválido');
+    }
+
+    // Validar que el usuario existe en la base de datos
+    const user = await this.userRepository.findOne({
+      where: { id: payload.sub, email: payload.email },
+      select: ['id', 'email', 'role', 'full_name']
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('Usuario no encontrado');
+    }
+
+    return { userId: user.id, email: user.email, role: user.role };
   }
 }
