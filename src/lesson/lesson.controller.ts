@@ -9,7 +9,7 @@ import { UpdateLessonDto } from './dto/update-lesson.dto';
 import { Lesson } from './lesson.entity';
 import type { RequestWithUser } from '../common/interfaces/request-with-user.interface';
 
-@Controller('courses/:courseId/modules/:moduleId/lessons')
+@Controller('modules/:moduleId/lessons')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @Roles('instructor')
 export class LessonController {

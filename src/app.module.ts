@@ -8,6 +8,7 @@ import { ModuleModule } from './module/module.module';
 import { EnrollmentModule } from './enrollment/enrollment.module';
 import { QuizModule } from './quiz/quiz.module';
 import { SubmissionModule } from './submission/submission.module';
+import { LessonModule } from './lesson/lesson.module';
 
 
 /*Entities*/
@@ -42,6 +43,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     CourseModule,
     EnrollmentModule,
     ModuleModule,
+    LessonModule,
     QuizModule,
     SubmissionModule,
   ],

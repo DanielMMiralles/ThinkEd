@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 export class LoginDto {
   @IsEmail({}, { message: 'Debe ser un correo electrónico válido.' })
@@ -6,5 +6,6 @@ export class LoginDto {
   email: string;
 
   @IsNotEmpty({ message: 'La contraseña no puede estar vacía.' })
+  @IsString({ message: 'La contraseña debe ser una cadena de texto.' })
   password: string;
 }

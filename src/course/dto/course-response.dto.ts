@@ -24,9 +24,4 @@ export class CourseResponseDto {
     @IsString()
     instructorName?: string;
 
-    @IsDate()
-    createdAt: Date;
-
-    @IsDate()
-    updatedAt: Date;
 }

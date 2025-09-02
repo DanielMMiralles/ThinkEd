@@ -18,7 +18,5 @@ export class UpdateCourseDto {
   @IsString()
   category?: string;
 
-  @IsOptional()
-  @IsDate()
-  updatedAt?: Date;
+
 }

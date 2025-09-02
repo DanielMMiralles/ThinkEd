@@ -50,18 +50,21 @@ export class AuthService {
   }
 
   // Método para validar las credenciales de un usuario
-  async validateUser(email: string, pass: string): Promise<any> {
+  async validateUser(email: string, pass: string): Promise<User | null> {
     const user = await this.usersRepository.findOne({ 
       where: { email },
       select: ['id', 'email', 'password', 'role', 'full_name']
     });
-    if (user && (await bcrypt.compare(pass, user.password))) {
-      const { password, ...result } = user;
-      return result;
+    if (!user) {
+      return null;
+    }
+    
+    const isMatch = await bcrypt.compare(pass, user.password);
+    if (isMatch) {
+      return user;
     }
     return null;
   }
-
   // Método para iniciar sesión y generar un token JWT
   async login(loginDto: LoginDto) {
     const user = await this.validateUser(loginDto.email, loginDto.password);

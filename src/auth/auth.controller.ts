@@ -17,15 +17,7 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(@Body() loginDto: LoginDto) {
-    // We now call the updated login method in AuthService, which handles both tokens.
-    const user = await this.authService.validateUser(
-      loginDto.email,
-      loginDto.password,
-    );
-    if (!user) {
-      throw new UnauthorizedException('Credenciales inválidas.');
-    }
-    return this.authService.login(user);
+    return this.authService.login(loginDto);
   }
 
   @Post('forgot-password')

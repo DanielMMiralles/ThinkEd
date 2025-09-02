@@ -17,9 +17,4 @@ export class CreateCourseDto {
   @IsNotEmpty()
   category: string;
 
-  @IsDate()
-  createdAt: Date;
-
-  @IsDate()
-  updatedAt: Date;
 }
