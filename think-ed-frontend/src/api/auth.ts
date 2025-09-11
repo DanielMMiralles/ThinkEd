@@ -27,7 +27,8 @@ export const register = async (userData: any) => {
 export const login = async (loginData: any) => {
   try {
     const response = await axios.post(`${API_URL}/login`, loginData);
-    return response.data;
+    const { access_token, role } = response.data;
+    return { token: access_token, role};
   } catch (error) {
     console.error('Login failed:', error);
     throw error;

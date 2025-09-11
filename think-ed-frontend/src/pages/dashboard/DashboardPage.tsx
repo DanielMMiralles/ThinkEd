@@ -1,5 +1,3 @@
-"use client"
-
 import DashboardLayout from "../../components/layout/DashboardLayout"
 import { FaBook, FaClock, FaTrophy, FaChartLine, FaCalendarAlt, FaPlay, FaArrowRight, FaStar } from "react-icons/fa"
 import { Link } from "react-router-dom"

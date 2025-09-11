@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Course } from './course.entity';
 import { User } from '../user/user.entity';
 import { CreateCourseDto } from './dto/create-course.dto';
@@ -51,7 +51,7 @@ export class CourseService {
     let query = this.courseRepository
       .createQueryBuilder('course')
       .leftJoinAndSelect('course.instructor', 'instructor')
-      .where('course.status = :status', { status: 'active' });
+      .where('course.status = :status', { status: 'Draft' });
 
     if (category) {
       query = query.andWhere('course.category = :category', { category });

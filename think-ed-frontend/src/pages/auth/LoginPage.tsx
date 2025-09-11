@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 import { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
@@ -22,8 +20,8 @@ const LoginPage = () => {
     setIsLoading(true)
 
     try {
-      const { access_token } = await login({ email, password })
-      authLogin(access_token)
+      const { token, role } = await login({ email, password })
+      authLogin(token, role)
       navigate("/dashboard")
     } catch (err: any) {
       setError("Credenciales inválidas. Por favor, verifica tu email y contraseña.")

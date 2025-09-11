@@ -20,7 +20,7 @@ const Sidebar = () => {
       description: "Resumen general",
     },
     {
-      path: "/mis-cursos",
+      path: "/courses",
       icon: IoBookOutline,
       label: "Mis Cursos",
       description: "Cursos inscritos",

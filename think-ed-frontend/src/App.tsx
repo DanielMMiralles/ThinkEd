@@ -4,15 +4,51 @@ import { useAuth } from './auth/AuthContext';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import Dashboard from './pages/dashboard/DashboardPage';
+import MyCoursesPage from './pages/myCourses/MyCoursesPage';
+import ExploreCoursesPage from './pages/exploreCourses/ExploreCoursesPage';
 const App = () => {
-  const { token } = useAuth();
+  const { token, role } = useAuth();
 
   return (
     <Routes>
-      <Route path="/" element={token ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-      <Route path="/dashboard" element={token ? <Dashboard /> : <Navigate to="/login" />} />
+      <Route
+        path="/dashboard"
+        element={
+          token ? (
+            role === 'estudiante' ? (
+              <Dashboard />
+            ) : role === 'instructor' ? (
+              <Dashboard />
+            ) : (
+              <Navigate to="/login" />
+            )
+          ) : (
+            <Navigate to="/login" />
+          )
+        }
+      />
+      <Route
+        path="/courses"
+        element={
+          token && role === 'estudiante' ? (
+            <MyCoursesPage />
+          ) : (
+            <Navigate to="/login" />
+          )
+        }
+      />
+      <Route
+        path="/todos-los-cursos"
+        element={
+          token && role === 'estudiante' ? (
+            <ExploreCoursesPage />
+          ) : (
+            <Navigate to="/login" />
+          )
+        }
+      />
     </Routes>
   );
 };

@@ -15,6 +15,7 @@ export class EnrollmentController {
   @Roles("estudiante") // Solo los estudiantes pueden inscribirse en cursos
   @Post()
   async enrollCourse(@Body() enrollmentDto: EnrollmentDto, @Request() req: RequestWithUser) {
+    console.log('El usuario autenticado es:', req.user); 
     return this.enrollmentService.createEnrollment(enrollmentDto, req.user.userId);
   }
 
