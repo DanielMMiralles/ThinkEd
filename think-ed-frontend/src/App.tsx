@@ -6,6 +6,8 @@ import RegisterPage from './pages/auth/RegisterPage';
 import Dashboard from './pages/dashboard/DashboardPage';
 import MyCoursesPage from './pages/myCourses/MyCoursesPage';
 import ExploreCoursesPage from './pages/exploreCourses/ExploreCoursesPage';
+import CalendarPage from './pages/calendar/CalendarPage';
+import CourseDetailPage from './pages/courseDetails/CourseDetailPage';
 const App = () => {
   const { token, role } = useAuth();
 
@@ -17,9 +19,9 @@ const App = () => {
         path="/dashboard"
         element={
           token ? (
-            role === 'estudiante' ? (
+            role === "estudiante" ? (
               <Dashboard />
-            ) : role === 'instructor' ? (
+            ) : role === "instructor" ? (
               <Dashboard />
             ) : (
               <Navigate to="/login" />
@@ -30,9 +32,9 @@ const App = () => {
         }
       />
       <Route
-        path="/courses"
+        path="/my-courses"
         element={
-          token && role === 'estudiante' ? (
+          token && role === "estudiante" ? (
             <MyCoursesPage />
           ) : (
             <Navigate to="/login" />
@@ -40,15 +42,32 @@ const App = () => {
         }
       />
       <Route
-        path="/todos-los-cursos"
+        path="/courses"
         element={
-          token && role === 'estudiante' ? (
+          token && role === "estudiante" ? (
             <ExploreCoursesPage />
           ) : (
             <Navigate to="/login" />
           )
         }
       />
+      <Route
+        path="/lessons-and-calendar"
+        element={
+          token ? (
+            role === "estudiante" ? (
+              <CalendarPage />
+            ) : role === "instructor" ? (
+              <CalendarPage />
+            ) : (
+              <Navigate to="/login" />
+            )
+          ) : (
+            <Navigate to="/login" />
+          )
+        }
+      />
+      <Route path="/courses/:courseId/module" element={<CourseDetailPage />} />
     </Routes>
   );
 };

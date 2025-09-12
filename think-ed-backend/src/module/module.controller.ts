@@ -26,6 +26,7 @@ export class ModuleController {
 
   @Get() 
   async findCourseModules(@Param('courseId') courseId: string): Promise<Module[]> {
+    console.log('Fetching modules for courseId from controller:', courseId);
     return this.moduleService.findAll(courseId);
   }
 

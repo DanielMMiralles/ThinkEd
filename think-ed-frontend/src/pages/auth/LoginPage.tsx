@@ -20,8 +20,8 @@ const LoginPage = () => {
     setIsLoading(true)
 
     try {
-      const { token, role } = await login({ email, password })
-      authLogin(token, role)
+      const { id, token, role } = await login({ email, password })
+      authLogin(id, token, role)
       navigate("/dashboard")
     } catch (err: any) {
       setError("Credenciales inválidas. Por favor, verifica tu email y contraseña.")

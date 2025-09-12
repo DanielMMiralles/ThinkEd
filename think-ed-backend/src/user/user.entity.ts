@@ -4,6 +4,7 @@ import { OneToMany } from 'typeorm';
 import { Course } from 'src/course/course.entity';
 import { Enrollment } from 'src/enrollment/enrollment.entity';
 import { Submission } from 'src/submission/submission.entity';
+import { Event } from 'src/calendar/entities/event.entity';
 
 @Entity()
 export class User {
@@ -27,6 +28,9 @@ export class User {
 
   @OneToMany(() => Enrollment, (enrollment) => enrollment.user)
   enrollments: Enrollment[];
+
+  @OneToMany(() => Event, (event) => event.instructor)
+  events: Event[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

@@ -21,6 +21,10 @@ export const getAllCourses = async () => {
 };
 
 // La función para obtener los cursos inscritos del usuario
+/**
+ * @param token 
+ * @returns 
+ */
 export const getEnrolledCourses = async (token: string) => {
   try {
     // Asume que tu backend tiene una ruta para obtener los cursos inscritos por el usuario
@@ -29,6 +33,7 @@ export const getEnrolledCourses = async (token: string) => {
         Authorization: `Bearer ${token}`,
       },
     });
+    console.log(response.data, "Cursos inscritos obtenidos en API");
     return response.data;
   } catch (error) {
     console.error('Error fetching enrolled courses:', error);

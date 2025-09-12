@@ -61,7 +61,7 @@ const ExploreCoursesPage = () => {
                 <CourseCard 
                   title={course.title}
                   instructor={course.instructorName}
-                  // No hay progreso en el catálogo, por lo que pasamos 0
+                  description={course.description}
                   progress={0} 
                 />
                 {isEnrolled(course.id) ? (

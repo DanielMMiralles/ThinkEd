@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
 /*Modules*/ 
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
@@ -9,6 +11,7 @@ import { EnrollmentModule } from './enrollment/enrollment.module';
 import { QuizModule } from './quiz/quiz.module';
 import { SubmissionModule } from './submission/submission.module';
 import { LessonModule } from './lesson/lesson.module';
+import { CalendarModule } from './calendar/calendar.module';
 
 
 /*Entities*/
@@ -20,7 +23,7 @@ import { Enrollment } from './enrollment/enrollment.entity';
 import { Submission } from './submission/submission.entity';
 import { Quiz } from './quiz/quiz.entity';
 import { Question } from './quiz/question.entity';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Event } from './calendar/entities/event.entity';
 
 @Module({
   imports: [
@@ -34,7 +37,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.get<string>('DATABASE_URL'),
-        entities: [User, Course, Lesson, ModuleEntity, Enrollment, Submission, Quiz, Question],
+        entities: [User, Course, Lesson, ModuleEntity, Enrollment, Submission, Quiz, Question, Event],
         synchronize: true, // En producción, es mejor usar migraciones en lugar de synchronize
       }),
     }),
@@ -46,6 +49,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     LessonModule,
     QuizModule,
     SubmissionModule,
+    CalendarModule,
   ],
   controllers: [],
   providers: [],

@@ -1,4 +1,5 @@
 // src/types/course.ts
+import type { Module } from './module';
 
 export type Course = {
   id: string;
@@ -10,4 +11,6 @@ export type Course = {
   createdAt: string;
   updatedAt: string;
   instructorName: string;
+  instructorId: string;
+  modules : Module[];
 };

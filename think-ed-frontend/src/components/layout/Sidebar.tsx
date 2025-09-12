@@ -20,19 +20,19 @@ const Sidebar = () => {
       description: "Resumen general",
     },
     {
-      path: "/courses",
+      path: "/my-courses",
       icon: IoBookOutline,
       label: "Mis Cursos",
       description: "Cursos inscritos",
     },
     {
-      path: "/todos-los-cursos",
+      path: "/courses",
       icon: IoLibraryOutline,
       label: "Explorar Cursos",
       description: "Catálogo completo",
     },
     {
-      path: "/clases-y-calendario",
+      path: "/lessons-and-calendar",
       icon: IoChatbubblesOutline,
       label: "Clases en Vivo",
       description: "Calendario y sesiones",

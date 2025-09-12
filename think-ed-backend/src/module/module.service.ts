@@ -53,11 +53,13 @@ export class ModuleService {
   }
 
   async findAll(courseId: string): Promise<Module[]> {
-    return this.moduleRepository.find({
+    const modules = await this.moduleRepository.find({
       where: { course: { id: courseId } },
       order: { order: 'ASC' },
       select: ['id', 'title', 'description', 'order']
     });
+    console.log('Fetching modules for courseId from services:', courseId);
+    return modules;
   }
 
   async update(moduleId: string, updateModuleDto: UpdateModuleDto, userId: string): Promise<Module> {

@@ -20,6 +20,7 @@ const MyCoursesPage = () => {
           const coursesData = await getEnrolledCourses(token);
           // Asume que el backend devuelve un array de objetos con la info del curso
           setCourses(coursesData);
+          console.log(coursesData, "Cursos inscritos obtenidos");
         }
       } catch (error) {
         console.error("Error al obtener los cursos inscritos:", error);
@@ -28,7 +29,7 @@ const MyCoursesPage = () => {
       }
     };
     fetchEnrolledCourses();
-  }, [token]);
+  }, []);
 
   return (
     <DashboardLayout>
@@ -41,9 +42,10 @@ const MyCoursesPage = () => {
         ) : courses.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {courses.map(course => (
-              <Link to={`/curso/${course.id}`} key={course.id}>
+              <Link to={`/courses/${course.id}/module`} key={course.id}>
                 <CourseCard 
                   title={course.title}
+                  description={course.description}
                   instructor={course.instructorName}
                   progress={75} // Esto sería un valor dinámico en un futuro
                 />

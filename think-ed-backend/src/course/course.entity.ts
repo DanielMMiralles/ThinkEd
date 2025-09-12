@@ -3,6 +3,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDat
 import { User } from '../user/user.entity';
 import { Module } from '../module/module.entity';
 import { Enrollment } from '../enrollment/enrollment.entity';
+import { Event } from '../calendar/entities/event.entity';
 
 @Entity('courses')
 export class Course {
@@ -40,6 +41,9 @@ export class Course {
 
   @OneToMany(() => Enrollment, (enrollment) => enrollment.course)
   enrollments: Enrollment[];
+
+  @OneToMany(() => Event, event => event.course)
+  events: Event[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

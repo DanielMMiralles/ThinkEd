@@ -68,6 +68,8 @@ export class EnrollmentService {
       .leftJoinAndSelect('course.instructor', 'instructor')
       .where('enrollment.user.id = :userId', { userId });
 
+    console.log(userId, "Buscando cursos para el usuario");
+
     // Aplicar el filtrado
     if (category) {
       query = query.andWhere('course.category = :category', { category });
@@ -87,6 +89,7 @@ export class EnrollmentService {
       throw new NotFoundException('No estás inscrito en cursos que coincidan con los criterios.');
     }
 
+    console.log(enrollments, "Inscripciones encontradas");
     //Mapear y devolver los resultados
     return enrollments.map(enrollment => ({
       ...enrollment.course,

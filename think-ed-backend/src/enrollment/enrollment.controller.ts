@@ -14,8 +14,7 @@ export class EnrollmentController {
   @UseGuards(AuthGuard('jwt')) // Protege la ruta con el guard de JWT
   @Roles("estudiante") // Solo los estudiantes pueden inscribirse en cursos
   @Post()
-  async enrollCourse(@Body() enrollmentDto: EnrollmentDto, @Request() req: RequestWithUser) {
-    console.log('El usuario autenticado es:', req.user); 
+  async enrollCourse(@Body() enrollmentDto: EnrollmentDto, @Request() req: RequestWithUser) { 
     return this.enrollmentService.createEnrollment(enrollmentDto, req.user.userId);
   }
 
@@ -28,6 +27,7 @@ export class EnrollmentController {
     @Query('category') category?: string,
     @Query('title') title?: string,
   ): Promise<CourseResponseDto[]> {
+    console.log(req.user.userId, "User ID");
     return this.enrollmentService.findEnrolledCourses(
       req.user.userId,
       parseInt(limit as any, 10),

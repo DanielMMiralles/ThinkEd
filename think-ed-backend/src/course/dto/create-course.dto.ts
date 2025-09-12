@@ -1,5 +1,8 @@
 // src/course/dto/create-course.dto.ts
-import { IsNotEmpty, IsString, IsNumber, IsDate } from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber } from 'class-validator';
+import Module from 'module';
+import { OneToMany } from 'typeorm';
+
 
 export class CreateCourseDto {
   @IsString()
@@ -17,4 +20,5 @@ export class CreateCourseDto {
   @IsNotEmpty()
   category: string;
 
+  
 }
